@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Wahu Category</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      background: #fff;
+      margin: 20px auto;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      padding: 10px;
+      margin: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .product-list {
+      margin-top: 20px;
+    }
+    .product-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f1f1f1;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 6px;
+    }
+    .product-item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 5px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Lucky Draw for Chrismas</h1>
+
+    <div>
+      <input type="text" id="productIdInput" placeholder="Enter Product ID to Add">
+      <button onclick="addWahuProduct()">Add Product</button>
+    </div>
+
+    <div class="product-list" id="wahu-products">
+      <p>Loading Wahu products...</p>
+    </div>
+  </div>
+
+  <script>
+    const list = document.getElementById("wahu-products");
+
+    // Fetch all Wahu products
+    async function loadWahuProducts() {
+      try {
+        const res = await fetch("http://localhost:5000/api/wahu");
+        const products = await res.json();
+
+        if (!products.length) {
+          list.innerHTML = "<p>No Wahu products found.</p>";
+          return;
+        }
+
+        list.innerHTML = products.map(p => {
+          const imageUrl = p.image?.url || `http://localhost:5000/uploads/${p.image || 'default-placeholder.png'}`;
+          return `
+            <div class="product-item">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <img src="${imageUrl}" alt="${p.name}">
+                <div>
+                  <strong>${p.name}</strong><br>
+                  <small>${p.title || ''}</small>
+                </div>
+              </div>
+              <button onclick="deleteWahuProduct('${p._id}')">Remove</button>
+            </div>
+          `;
+        }).join("");
+      } catch (err) {
+        console.error("Error loading Wahu products:", err);
+        list.innerHTML = "<p>Error loading products.</p>";
+      }
+    }
+
+    // Add new product to Wahu
+    async function addWahuProduct() {
+      const productId = document.getElementById("productIdInput").value.trim();
+      if (!productId) return alert("Enter Product ID first!");
+
+      try {
+        const res = await fetch("http://localhost:5000/api/wahu", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId }),
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.message);
+          document.getElementById("productIdInput").value = "";
+          loadWahuProducts();
+        } else {
+          alert(data.error);
+        }
+      } catch (err) {
+        console.error("Error adding product:", err);
+        alert("Failed to add product");
+      }
+    }
+
+    // Delete product from Wahu
+    async function deleteWahuProduct(id) {
+      if (!confirm("Remove this product from Wahu category?")) return;
+      try {
+        const res = await fetch(`http://localhost:5000/api/wahu/${id}`, {
+          method: "DELETE",
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.message);
+          loadWahuProducts();
+        } else {
+          alert(data.error);
+        }
+      } catch (err) {
+        console.error("Error deleting product:", err);
+        alert("Failed to delete product");
+      }
+    }
+
+    loadWahuProducts();
+  </script>
+</body>
+</html>

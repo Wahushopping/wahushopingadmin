@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Order List</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <link rel="stylesheet" href="catagory.css" />
+  <style>
+    svg[id^="barcode-"] { margin-top: 10px; }
+    #searchBar { margin-bottom: 20px; padding: 5px; width: 250px; }
+    .copy-btn { margin-left: 10px; padding: 2px 6px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <h2>All Orders</h2>
+
+  <!-- Search Bar -->
+  <input type="text" id="searchBar" placeholder="Search by Order ID" />
+
+  <div id="adminOrderList">Loading...</div>
+
+  <script>
+    let allOrders = [];
+
+    // Fetch all orders
+    fetch("http://localhost:5000/api/orders")
+      .then(res => res.json())
+      .then(orders => {
+        allOrders = orders;
+        renderOrders(allOrders);
+      })
+      .catch(() => {
+        document.getElementById("adminOrderList").innerHTML = "<p>Error loading orders.</p>";
+      });
+
+    // Search bar functionality
+    document.getElementById("searchBar").addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase();
+      const filteredOrders = allOrders.filter(order => order._id.toLowerCase().includes(query));
+      renderOrders(filteredOrders);
+    });
+
+    // Render orders function
+    function renderOrders(orders) {
+      const adminOrderList = document.getElementById("adminOrderList");
+
+      if (!orders.length) {
+        adminOrderList.innerHTML = "<p>No orders found.</p>";
+        return;
+      }
+
+      adminOrderList.innerHTML = orders.map(order => `
+        <div id="order-${order._id}" style="border:1px solid #ddd; padding:10px; margin:10px 0;">
+          <p>
+            <strong>Order ID:</strong> ${order._id} 
+            <button class="copy-btn" onclick="copyOrderID('${order._id}')">Copy</button>
+          </p>
+          <svg id="barcode-${order._id}"></svg>
+
+          <p><strong>Placed On:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+          <p><strong>User:</strong> ${order.user?.name || 'Unknown'}</p>
+          <p><strong>Mobile No:</strong> ${order.address?.phone || ''}</p>
+          <p><strong>Full Address:</strong> ${order.address?.fullAddress || ''}</p>
+
+          <p><strong>Total:</strong> ₹${order.total}</p>
+          <p><strong>Discount:</strong> ₹${order.discount}</p>
+          <p><strong>Final Amount:</strong> ₹${order.finalAmount}</p>
+          <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
+          <p><strong>Status:</strong> ${order.status}</p>
+
+          <label for="status-${order._id}">Update Status:</label>
+          <select id="status-${order._id}">
+            <option value="Ordered" ${order.status === 'Ordered' ? 'selected' : ''}>Ordered</option>
+            <option value="Packed" ${order.status === 'Packed' ? 'selected' : ''}>Packed</option>
+            <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+            <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
+            <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+            <option value="Return" ${order.status === 'Return' ? 'selected' : ''}>Return</option>
+            <option value="Cancel" ${order.status === 'Cancel' ? 'selected' : ''}>Cancel</option>
+          </select>
+
+          <p><strong>Delivery Date:</strong>
+            <input type="date" id="delivery-${order._id}" 
+              value="${order.deliveryDate ? new Date(order.deliveryDate).toISOString().split('T')[0] : ''}" />
+          </p>
+
+          <button onclick="updateOrderStatus('${order._id}')">Update</button>
+
+          <div style="margin-top: 10px;">
+            <strong>Items:</strong>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px;">
+              ${order.items.map(item => {
+                const imageUrl = item.image?.url || item.image || "placeholder.jpg";
+                return `
+                  <div style="border: 1px solid #ccc; padding: 5px; display: flex; gap: 10px; align-items: center;">
+                    <img src="${imageUrl}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover;">
+                    <div>
+                      <p style="margin: 0;"><strong>${item.name}</strong></p>
+                      <p style="margin: 0;">Qty: ${item.qty}</p>
+                      <p style="margin: 0;">Price: ₹${item.price}</p>
+                      <p style="margin: 0;">Size: ${item?.size || 'N/A'}</p>
+                      <p style="margin: 0;">Reselling Company: ${item?.title || 'N/A'}</p>
+                    </div>
+                  </div>`;
+              }).join("")}
+            </div>
+          </div>
+
+          <button onclick="downloadPDF('order-${order._id}')">Download PDF</button>
+        </div>
+      `).join("");
+
+      // Render barcodes
+      orders.forEach(order => {
+        JsBarcode(`#barcode-${order._id}`, order._id, {
+          format: "CODE128",
+          width: 2,
+          height: 40,
+          displayValue: true
+        });
+      });
+    }
+
+    // Copy order ID function
+    function copyOrderID(orderId) {
+      navigator.clipboard.writeText(orderId).then(() => {
+        alert(`Order ID ${orderId} copied to clipboard`);
+      }).catch(err => {
+        alert("Failed to copy order ID");
+      });
+    }
+
+    // Update order status
+    function updateOrderStatus(orderId) {
+      const selectedStatus = document.getElementById(`status-${orderId}`).value;
+      const deliveryDate = document.getElementById(`delivery-${orderId}`).value;
+
+      fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: selectedStatus, deliveryDate: deliveryDate || null })
+      })
+      .then(res => res.json())
+      .then(() => location.reload())
+      .catch(() => alert("Failed to update order."));
+    }
+
+    // Download PDF
+    function downloadPDF(orderId) {
+      const element = document.getElementById(orderId);
+      const opt = {
+        margin: 0.5,
+        filename: `${orderId}-details.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().from(element).set(opt).save();
+    }
+  </script>
+</body>
+</html>

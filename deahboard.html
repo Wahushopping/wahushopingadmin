@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Analytics</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f8f9fa;
+    margin: 0;
+    padding: 0;
+  }
+
+  .analytics {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "basic total"
+      "chart chart";
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  h2 {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  /* Top Products Section */
+  .top-products {
+    max-width: 1200px;
+    margin: 20px auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .top-products .box {
+    flex: 1;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .top-products h3 {
+    margin-top: 0;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .top-products ol {
+    padding-left: 20px;
+    margin: 0;
+  }
+
+  /* Left Section (Basic Stats) */
+  .basic-sales {
+    grid-area: basic;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .basic-sales > div {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+  }
+
+  /* Right Section (Total Stats) */
+  .total-summary {
+    grid-area: total;
+    background: #ffede8;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .total-summary h3 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+
+  /* Chart section */
+  .chart-container {
+    grid-area: chart;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  canvas {
+    width: 100% !important;
+    height: 400px !important;
+  }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    .analytics {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        "basic"
+        "total"
+        "chart";
+    }
+
+    .top-products {
+      flex-direction: column;
+    }
+  }
+
+
+
+   /* 🔄 Top Cycle Section (Improved Look) */
+.cycle-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 100px;
+  margin: 40px auto 20px;
+  flex-wrap: wrap;
+}
+
+.cycle-box {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  padding: 15px;
+}
+
+.cycle-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.cycle-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  line-height: 1.3;
+  color: #333;
+}
+
+.cycle-label span {
+  display: block;
+  font-size: 28px;
+  font-weight: bold;
+  color: #000;
+}
+
+.cycle-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #555;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .cycle-section {
+    gap: 40px;
+  }
+  .cycle-box {
+    width: 140px;
+    height: 140px;
+  }
+  .cycle-label span {
+    font-size: 22px;
+  }
+}
+
+</style>
+</head>
+<body>
+
+<h2>Sales Analytics</h2>
+
+
+
+<div class="analytics">
+
+  <!-- Left: Basic Stats -->
+  <div class="basic-sales">
+    <h3>Basic Sales Overview</h3>
+    <div style="background-color: rgb(178, 250, 178); padding: 10px; border-radius: 10px;">
+      <h4>Last 24 Hours</h4>
+      <p>Orders: <span id="orders24h">0</span></p>
+      <p>Revenue: ₹<span id="revenue24h">0</span></p>
+    </div>
+     <div style="background-color: rgb(143, 208, 247); padding: 10px; border-radius: 10px;">
+      <h4>Last 1 Week</h4>
+      <p>Orders: <span id="ordersWeek">0</span></p>
+      <p>Revenue: ₹<span id="revenueWeek">0</span></p>
+    </div>
+    <div style="background-color: rgb(250, 157, 222); padding: 10px; border-radius: 10px;">
+      <h4>Last 1 Month</h4>
+      <p>Orders: <span id="ordersMonth">0</span></p>
+      <p>Revenue: ₹<span id="revenueMonth">0</span></p>
+    </div>
+  </div>
+
+  <!-- Right: Total Summary -->
+  <div class="total-summary">
+    <h3>Total Summary</h3>
+    <div>
+      <p style="padding: 30px; background-color: rgb(215, 250, 57);font-size: 20px; border-radius: 10px;">Orders no: <span id="ordersTotal" style="float: right;" >0</span></p>
+      <p style="padding: 30px; background-color: rgb(57, 255, 73);font-size: 20px; border-radius: 10px;">Revenue amounts:₹ <span id="revenueTotal"  style="float: right;">0</span></p>
+      <p style="padding: 30px; background-color: rgb(252, 58, 148);font-size: 20px; border-radius: 10px;">Returns no: <span id="returnsTotal" style="float: right;">0</span></p>
+      <p style="padding: 30px; background-color: rgb(142, 140, 250);font-size: 20px; border-radius: 10px;">Users Registered no: <span id="totalUsers" style="float: right;">0</span></p>
+      <p style="padding: 30px; background-color: rgb(226, 226, 226);font-size: 20px; border-radius: 10px;">Users Logged In no: <span id="loggedInUsers" style="float: right;">0</span></p>
+    </div>
+  </div>
+
+  <!-- Chart Section -->
+  <div class="chart-container">
+    <canvas id="salesChart"></canvas>
+  </div>
+</div>
+
+
+
+
+<!-- 🔄 TOP CYCLE PERCENTAGE SECTION -->
+<div class="cycle-section">
+  <div class="cycle-box">
+    <canvas id="topOrderCycle"></canvas>
+    <div class="cycle-label">Top Orders<br><span id="orderPercent">0%</span></div>
+  </div>
+
+  <div class="cycle-box">
+    <canvas id="topReturnCycle"></canvas>
+    <div class="cycle-label">Top Returns<br><span id="returnPercent">0%</span></div>
+  </div>
+</div>
+
+<!-- Top Products Section -->
+<div class="top-products">
+  <div class="box">
+    <h3>Top Ordered Products</h3>
+    <ol id="topProducts">
+      <li>Loading...</li>
+    </ol>
+  </div>
+  <div class="box">
+    <h3>Top Returned Products</h3>
+    <ol id="topReturnedProducts">
+      <li>Loading...</li>
+    </ol>
+  </div>
+</div>
+<div style="text-align: center; margin: 100px;">
+  <h1>Admin Dashboard</h1>
+</div>
+<script>
+async function loadAnalytics() {
+  try {
+    const res = await fetch("http://localhost:5000/api/admin/analytics");
+    const data = await res.json();
+
+    // Update left side stats
+    document.getElementById("orders24h").innerText = data.last24h.orders;
+    document.getElementById("revenue24h").innerText = data.last24h.revenue;
+    document.getElementById("ordersWeek").innerText = data.lastWeek.orders;
+    document.getElementById("revenueWeek").innerText = data.lastWeek.revenue;
+    document.getElementById("ordersMonth").innerText = data.lastMonth.orders;
+    document.getElementById("revenueMonth").innerText = data.lastMonth.revenue;
+
+    // Update right side total
+    document.getElementById("ordersTotal").innerText = data.totalOrders;
+    document.getElementById("revenueTotal").innerText = data.totalRevenue;
+    document.getElementById("returnsTotal").innerText = data.returns;
+    document.getElementById("totalUsers").innerText = data.totalUsers;
+    document.getElementById("loggedInUsers").innerText = data.loggedInUsers;
+
+    // Update top products
+    document.getElementById("topProducts").innerHTML =
+      data.topProducts.map(p => `<li>${p.name} - ${p.quantity} sold</li>`).join("");
+
+    document.getElementById("topReturnedProducts").innerHTML =
+      data.topReturnedProducts.map(p => `<li>${p.name} - ${p.quantity} returned</li>`).join("");
+
+    // Chart
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Last 24h', 'Last 1 Week', 'Last 1 Month', 'Total'],
+        datasets: [{
+          label: 'Orders',
+          data: [data.last24h.orders, data.lastWeek.orders, data.lastMonth.orders, data.totalOrders],
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        },{
+          label: 'Revenue',
+          data: [data.last24h.revenue, data.lastWeek.revenue, data.lastMonth.revenue, data.totalRevenue],
+          backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        }]
+      },
+      options: { responsive: true, scales: { y: { beginAtZero: true } } }
+    });
+
+  } catch (err) {
+    console.error("Failed to load analytics:", err);
+  }
+}
+loadAnalytics();
+</script>
+<script>
+function createCycleChart(id, percent, color) {
+  const ctx = document.getElementById(id).getContext("2d");
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [percent, 100 - percent],
+        backgroundColor: [color, '#eaeaea'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      cutout: '70%',
+      plugins: {
+        legend: { display: false },
+        tooltip: { enabled: false }
+      }
+    }
+  });
+}
+
+// Example percentages — you can replace with API data
+const topOrderPercent = 75;   // 75% orders success
+const topReturnPercent = 25;  // 25% returns
+
+document.getElementById("orderPercent").innerText = topOrderPercent + "%";
+document.getElementById("returnPercent").innerText = topReturnPercent + "%";
+
+// Draw charts
+createCycleChart("topOrderCycle", topOrderPercent, "#28a745"); // green
+createCycleChart("topReturnCycle", topReturnPercent, "#dc3545"); // red
+</script>
+
+</body>
+</html>

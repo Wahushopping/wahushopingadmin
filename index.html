@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<title>Admin Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background: #f8f8f8;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 240px;
+    background: #fff;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-fixed {
+    padding-top: 20px;
+    flex-shrink: 0;
+    border-bottom: 1px solid #eee;
+  }
+  .sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+  }
+  .sidebar a {
+    display: block;
+    padding: 12px 20px;
+    margin: 0 10px;
+    border-radius: 6px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .sidebar a:hover, .sidebar a.active { background: #007bff; color: #fff; }
+
+  /* Main Content */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Topbar */
+  .topbar {
+    background: #a8fc5a;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .topbar h1 { font-size: 18px; font-weight: bold; }
+  .topbar a {
+    text-decoration: none;
+    color: #333;
+    background: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+  .topbar a:hover { background: #007bff; color: #fff; }
+
+  /* Iframe */
+  iframe {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: #f4f4f4;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { width: 180px; }
+    .topbar a { padding: 5px 10px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <div class="sidebar-fixed" style="background-color: #a8fc5a;">
+    <a href="deahboard.html" target="mainFrame" class="active" style="background-color: brown;">Dashboard</a>
+    <a href="admin.html" target="mainFrame"><i class="fa-solid fa-plus"></i> Update Product</a>
+    <a href="adminOrderList.html" target="mainFrame"><i class="fa-brands fa-first-order"></i> Order List</a>
+    <a href="orderreturn.html" target="mainFrame"><i class="fa-solid fa-right-left"></i> Return List</a>
+    <a href="returnpending.html" target="mainFrame"><i class="fa-solid fa-right-left"></i> RP List</a>
+    
+    <hr>
+    <a href="luckywahu.html" target="mainFrame" style="background-color: rgb(172, 201, 255);"><i class="fa-solid fa-clover"></i> Chrismas Lucky </a>
+    <a href="home-admin.html" target="mainFrame" style="background-color: rgb(255, 172, 183);"><i class="fa-solid fa-clover"></i>  New year Lucky</a>
+    <hr>
+  </div>
+
+  <h3 style="padding-left: 20px; background-color: #b1b1b1; margin: 10px; padding: 10px; border-radius: 7px;">
+    Category
+  </h3>
+
+  <div class="sidebar-scroll">
+    <a href="shoes-admin.html" target="mainFrame"><i class="fa-regular fa-square-plus"></i> Shoes</a>
+    <a href="kid-admin.html" target="mainFrame"><i class="fa-regular fa-square-plus"></i> Kids</a>
+    <a href="bottomwear-admin.html" target="mainFrame"><i class="fa-regular fa-square-plus"></i> Bottomwear</a>
+    <a href="beauty-admin.html" target="mainFrame"><i class="fa-regular fa-square-plus"></i> Ladies shoes</a>
+    <a href="electronics-admin.html" target="mainFrame"><i class="fa-regular fa-square-plus"></i> Winter</a>
+    <a href="bag-admin.html" target="mainFrame"><i class="fa-regular fa-square-plus"></i> Bags</a>
+    <a href="sarees-admin.html" target="mainFrame"><i class="fa-regular fa-square-plus"></i> Sarees</a>
+    <a href="cusual-admin.html" target="mainFrame"><i class="fa-regular fa-square-plus"></i> Cusual</a>
+    <a href="formal-admin.html" target="mainFrame"><i class="fa-regular fa-square-plus"></i> Formal</a>
+    <a href="kurta-admin.html" target="mainFrame"><i class="fa-regular fa-square-plus"></i> Kurtas</a>
+    <a href="topwear-admin.html" target="mainFrame"><i class="fa-regular fa-square-plus"></i> Topwear</a>
+    <a href="trending-admin.html" target="mainFrame"><i class="fa-regular fa-square-plus"></i> Trending</a>
+    <a href="dress-admin.html" target="mainFrame"><i class="fa-regular fa-square-plus"></i> Dress</a>
+    
+    
+  </div>
+  <a href="mobile-admin.html" target="mainFrame" style="background-color: black; color: #fff; padding: 13px; padding-bottom: 10px;"><i class="fa-regular fa-square-plus"></i> Collection for Man</a>
+     <a href="watch-admin.html" target="mainFrame" style="background-color: black; color: #fff; padding: 13px; padding-bottom: 10px;"><i class="fa-regular fa-square-plus"></i> Collection for Ladies</a>
+     <a href="sport-admin.html" target="mainFrame" style="background-color: black; color: #fff; padding: 13px; padding-bottom: 30px;"><i class="fa-regular fa-square-plus"></i> Ladies for Topwear</a>
+
+</div>
+
+<div class="main">
+  <div class="topbar" style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #a8fc5a; border-bottom: 1px solid #ccc;">
+    <h1 style="margin: 0;">Wahu Shopping</h1>
+     <!-- Left side links -->
+    <a href="last48hOrders.html" target="mainFrame">Last 48 Hours Orders</a>
+    <a href="last48hReturn.html" target="mainFrame">Last 48 Hours Returns</a>
+    <!-- Right side links -->
+    <div>
+      <a href="statuspending.html" target="mainFrame" style="margin-left: 15px;background-color: rgb(247, 85, 85);">Pending</a>
+      <a href="statusorder.html" target="mainFrame" style="margin-left: 15px; background-color: rgb(255, 233, 218);">Orders</a>
+      <a href="statuspacked.html" target="mainFrame" style="margin-left: 15px; background-color: aqua;">Packed</a>
+      <a href="statusshiped.html" target="mainFrame" style="margin-left: 15px;background-color: rgb(173, 173, 255);">Shipped</a>
+      <a href="statusoutofdelivary.html" target="mainFrame" style="margin-left: 15px;background-color: burlywood;">Out for Delivery</a>
+      <a href="statusdelivary.html" target="mainFrame" style="margin-left: 15px; background-color: #b1b1b1;">Delivered</a>
+      <a href="statusreturn.html" target="mainFrame" style="margin-left: 15px;background-color: rgb(255, 170, 170);">Return</a>
+      <a href="statuscancel.html" target="mainFrame" style="margin-left: 15px; margin-right: 25px;background-color: rgb(240, 240, 240);">Cancel</a>
+    </div>
+  </div>
+
+  <!-- Main content iframe -->
+  <iframe name="mainFrame" src="deahboard.html"></iframe>
+</div>
+
+
+<script>
+  // Highlight active sidebar link
+  const links = document.querySelectorAll('.sidebar a');
+  links.forEach(link => {
+    link.addEventListener('click', () => {
+      links.forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>

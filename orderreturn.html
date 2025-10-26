@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Return Requests - Admin</title>
+  <link rel="stylesheet" href="catagory.css" />
+  <style>
+    body{
+      padding-left: 50px;
+      padding-right: 50px;
+    }
+    .order-box { border: 1px solid #ccc; padding: 15px; margin: 15px 0; }
+    .item-box { margin-left: 15px; border-top: 1px solid #eee; padding-top: 10px; }
+    img { border: 1px solid #ddd; }
+    #searchBar { margin-bottom: 10px; padding: 5px; width: 250px; }
+    .copy-btn { margin-left: 10px; padding: 2px 6px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <h1>Return Requests</h1>
+
+  <!-- Search Bar -->
+  <input type="text" id="searchBar" placeholder="Search by Order ID" />
+
+  <div id="returnsContainer">Loading...</div>
+
+  <script>
+    let allOrders = [];
+
+    // Fetch all return requests
+    fetch("http://localhost:5000/api/orders/returns")
+      .then(res => res.json())
+      .then(orders => {
+        allOrders = orders;
+        renderReturns(allOrders);
+      })
+      .catch(err => {
+        console.error("Error fetching returns:", err);
+        document.getElementById("returnsContainer").innerHTML = "<p>Error loading return requests.</p>";
+      });
+
+    // Search functionality
+    document.getElementById("searchBar").addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase();
+      const filtered = allOrders.filter(order => order._id.toLowerCase().includes(query));
+      renderReturns(filtered);
+    });
+
+    // Render return requests
+    function renderReturns(orders) {
+      const container = document.getElementById("returnsContainer");
+      container.innerHTML = "";
+
+      if (!orders.length) {
+        container.innerHTML = "<p>No return requests found.</p>";
+        return;
+      }
+
+      orders.forEach(order => {
+        const orderDiv = document.createElement("div");
+        orderDiv.classList.add("order-box");
+
+        orderDiv.innerHTML = `
+          <p>
+            <strong>Order ID:</strong> ${order._id}
+            <button class="copy-btn" onclick="copyOrderID('${order._id}')">Copy</button>
+          </p>
+          <p><strong>User:</strong> ${order.address.name} (${order.address.phone})</p>
+          <p><strong>Address:</strong> ${order.address.fullAddress}, ${order.address.city}, ${order.address.pincode}</p>
+          <p><strong>Total:</strong> ₹${order.total}</p>
+          <p><strong>Status:</strong> ${order.status}</p>
+        `;
+
+        // Loop through order items and display only those with return requests
+        order.items.forEach(item => {
+          if (item.returnRequested) {
+            const imageUrl = item.image?.url || item.image || "placeholder.jpg";
+            orderDiv.innerHTML += `
+              <div class="item-box">
+                <img src="${imageUrl}" alt="${item.name}" style="width: 50px; height: 50px; object-fit: cover;">
+                <p><strong>Product:</strong> ${item.name}</p>
+                <p style="margin: 0;">Reselling Company: ${item?.title || 'N/A'}</p>
+                <p style="margin: 0;">Price: ₹${item.price}</p>
+                <p><strong>Reason:</strong> ${item.returnReason}</p>
+                <p><strong>Status:</strong> ${item.returnStatus || "Pending"}</p>
+                <button onclick="updateReturnStatus('${order._id}', '${item._id}', true)">Approve</button>
+                <button onclick="updateReturnStatus('${order._id}', '${item._id}', false)">Reject</button>
+              </div>
+            `;
+          }
+        });
+
+        container.appendChild(orderDiv);
+      });
+    }
+
+    // Copy Order ID
+    function copyOrderID(orderId) {
+      navigator.clipboard.writeText(orderId)
+        .then(() => alert(`Order ID ${orderId} copied!`))
+        .catch(() => alert("Failed to copy order ID."));
+    }
+
+    // Update return status
+    function updateReturnStatus(orderId, itemId, approved) {
+      fetch(`http://localhost:5000/api/orders/${orderId}/return/${itemId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ approved })
+      })
+      .then(res => res.json())
+      .then(() => {
+        alert("Return updated");
+        location.reload();
+      })
+      .catch(err => {
+        console.error("Update failed:", err);
+        alert("Error updating return");
+      });
+    }
+  </script>
+</body>
+</html>
+
