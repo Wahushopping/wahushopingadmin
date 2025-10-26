@@ -198,7 +198,7 @@
           formData.append("video", document.getElementById("video").files[0]);
         }
 
-        fetch("http://localhost:5000/api/products/add", {
+        fetch("https://wahuserver.onrender.com/api/products/add", {
           method: "POST",
           body: formData
         })
@@ -213,7 +213,7 @@
 
       // LOAD PRODUCTS
       function loadProducts() {
-        fetch("http://localhost:5000/api/products")
+        fetch("https://wahuserver.onrender.com/api/products")
           .then(res => res.json())
           .then(products => {
             if (!products.length) {
@@ -278,7 +278,7 @@ wrapper.innerHTML = `
                 const sizes = Array.from(form.querySelectorAll('input[name="sizes"]:checked')).map(cb => cb.value);
                 updateData.append("sizes", JSON.stringify(sizes));
 
-                fetch(`http://localhost:5000/api/products/${p._id}`, {
+                fetch(`https://wahuserver.onrender.com/api/products/${p._id}`, {
                   method: "PUT",
                   body: updateData
                 })
@@ -298,7 +298,7 @@ wrapper.innerHTML = `
       // DELETE PRODUCT
       window.deleteProduct = function (id) {
         if (!confirm("Are you sure?")) return;
-        fetch(`http://localhost:5000/api/products/${id}`, { method: "DELETE" })
+        fetch(`https://wahuserver.onrender.com/api/products/${id}`, { method: "DELETE" })
           .then(res => res.json())
           .then(() => {
             alert("Product deleted!");
@@ -320,7 +320,7 @@ wrapper.innerHTML = `
   let allProducts = [];
 
   function loadProducts() {
-    fetch("http://localhost:5000/api/products")
+    fetch("https://wahuserver.onrender.com/api/products")
       .then(res => res.json())
       .then(products => {
         allProducts = products; // Save for search filtering
@@ -399,7 +399,7 @@ wrapper.innerHTML = `
         const sizes = Array.from(form.querySelectorAll('input[name="sizes"]:checked')).map(cb => cb.value);
         updateData.append("sizes", JSON.stringify(sizes));
 
-        fetch(`http://localhost:5000/api/products/${p._id}`, {
+        fetch(`https://wahuserver.onrender.com/api/products/${p._id}`, {
           method: "PUT",
           body: updateData
         })
@@ -423,7 +423,7 @@ wrapper.innerHTML = `
 
   window.deleteProduct = function(id) {
     if (!confirm("Are you sure?")) return;
-    fetch(`http://localhost:5000/api/products/${id}`, { method: "DELETE" })
+    fetch(`https://wahuserver.onrender.com/api/products/${id}`, { method: "DELETE" })
       .then(res => res.json())
       .then(() => {
         alert("Product deleted!");
@@ -437,3 +437,4 @@ wrapper.innerHTML = `
   
 </body>
 </html>
+
