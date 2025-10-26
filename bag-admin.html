@@ -54,7 +54,7 @@
       const id = document.getElementById("productIdInput").value;
       if (!id) return alert("Enter Product ID");
 
-      const res = await fetch('http://localhost:5000/api/bags', {
+      const res = await fetch('https://wahuserver.onrender.com/api/bags', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId: id })
@@ -68,7 +68,7 @@
     async function deleteProduct(id) {
       if (!confirm("Remove from Bags category?")) return;
 
-      const res = await fetch(`http://localhost:5000/api/bags/${id}`, {
+      const res = await fetch(`https://wahuserver.onrender.com/api/bags/${id}`, {
         method: 'DELETE'
       });
 
@@ -83,3 +83,4 @@
 </body>
 
 </html>
+
