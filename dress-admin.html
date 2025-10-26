@@ -20,7 +20,7 @@
 
   <script>
     async function loadDress() {
-      const res = await fetch('http://localhost:5000/api/dress');
+      const res = await fetch('https://wahuserver.onrender.com/api/dress');
       const products = await res.json();
 
       const list = document.getElementById('dressList');
@@ -83,4 +83,5 @@
 </body>
 
 </html>
+
 
