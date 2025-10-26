@@ -20,7 +20,7 @@
 
   <script>
     async function loadTrending() {
-      const res = await fetch('http://localhost:5000/api/trending');
+      const res = await fetch('https://wahuserver.onrender.com/api/trending');
       const products = await res.json();
 
       const list = document.getElementById('trendingList');
@@ -54,7 +54,7 @@
       const id = document.getElementById("productIdInput").value;
       if (!id) return alert("Enter Product ID");
 
-      const res = await fetch('http://localhost:5000/api/trending', {
+      const res = await fetch('https://wahuserver.onrender.com/api/trending', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId: id })
@@ -68,7 +68,7 @@
     async function deleteProduct(id) {
       if (!confirm("Remove from Trending category?")) return;
 
-      const res = await fetch(`http://localhost:5000/api/trending/${id}`, {
+      const res = await fetch(`https://wahuserver.onrender.com/api/trending/${id}`, {
         method: 'DELETE'
       });
 
@@ -83,3 +83,4 @@
 </body>
 
 </html>
+
