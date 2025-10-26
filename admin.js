@@ -20,7 +20,7 @@ document.getElementById("product-form").addEventListener("submit", async functio
   };
 
   try {
-    const res = await fetch("http://localhost:5000/api/products", {
+    const res = await fetch("https://wahuserver.onrender.com/api/products", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -41,3 +41,4 @@ document.getElementById("product-form").addEventListener("submit", async functio
     alert("❌ Error connecting to server");
   }
 });
+
