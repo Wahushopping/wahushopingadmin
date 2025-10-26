@@ -20,7 +20,7 @@
 
   <script>
     async function loadBags() {
-      const res = await fetch('http://localhost:5000/api/bags');
+      const res = await fetch('https://wahuserver.onrender.com/api/bags');
       const products = await res.json();
 
       const list = document.getElementById('bagList');
@@ -83,4 +83,5 @@
 </body>
 
 </html>
+
 
