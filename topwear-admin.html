@@ -20,7 +20,7 @@
 
   <script>
     async function loadTopwear() {
-      const res = await fetch('http://localhost:5000/api/topwear');
+      const res = await fetch('https://wahuserver.onrender.com/api/topwear');
       const products = await res.json();
 
       const list = document.getElementById('topwearList');
@@ -69,7 +69,7 @@
     async function deleteProduct(id) {
       if (!confirm("Remove from Topwear category?")) return;
 
-      const res = await fetch(`http://localhost:5000/api/topwear/${id}`, {
+      const res = await fetch(`https://wahuserver.onrender.com/api/topwear/${id}`, {
         method: 'DELETE'
       });
 
@@ -84,3 +84,4 @@
 </body>
 
 </html>
+
