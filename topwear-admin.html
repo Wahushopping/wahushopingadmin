@@ -55,7 +55,7 @@
       const id = document.getElementById("productIdInput").value;
       if (!id) return alert("Enter Product ID");
 
-      const res = await fetch('http://localhost:5000/api/topwear', {
+      const res = await fetch('https://wahuserver.onrender.com/api/topwear', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId: id })
@@ -84,4 +84,5 @@
 </body>
 
 </html>
+
 
