@@ -20,7 +20,7 @@
 
   <script>
     async function loadFormal() {
-      const res = await fetch('http://localhost:5000/api/formal');
+      const res = await fetch('https://wahuserver.onrender.com/api/formal');
       const products = await res.json();
 
       const list = document.getElementById('formalList');
@@ -56,7 +56,7 @@
       const id = document.getElementById("productIdInput").value;
       if (!id) return alert("Enter Product ID");
 
-      const res = await fetch('http://localhost:5000/api/formal', {
+      const res = await fetch('https://wahuserver.onrender.com/api/formal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId: id })
@@ -70,7 +70,7 @@
     async function deleteProduct(id) {
       if (!confirm("Remove from Formal category?")) return;
 
-      const res = await fetch(`http://localhost:5000/api/formal/${id}`, {
+      const res = await fetch(`https://wahuserver.onrender.com/api/formal/${id}`, {
         method: 'DELETE'
       });
 
@@ -85,3 +85,4 @@
 </body>
 
 </html>
+
