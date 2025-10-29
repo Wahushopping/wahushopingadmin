@@ -37,7 +37,7 @@
     let allOrders = [];
 
     // Fetch orders
-    fetch("http://localhost:5000/api/orders")
+    fetch("https://wahuserver.onrender.com/api/orders")
       .then(res => res.json())
       .then(orders => {
         allOrders = orders.filter(o => o.status === statusFilter);
@@ -165,7 +165,7 @@
       const selectedStatus = document.getElementById(`status-${orderId}`).value;
       const deliveryDate = document.getElementById(`delivery-${orderId}`).value;
 
-      fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+      fetch(`https://wahuserver.onrender.com/api/orders/${orderId}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: selectedStatus, deliveryDate: deliveryDate || null })
@@ -177,3 +177,4 @@
   </script>
 </body>
 </html>
+
