@@ -19,7 +19,7 @@
 
   <script>
     async function loadCusual() {
-      const res = await fetch('http://localhost:5000/api/cusual');
+      const res = await fetch('https://wahuserver.onrender.com/api/cusual');
       const products = await res.json();
 
       const list = document.getElementById('cusualList');
@@ -66,7 +66,7 @@ div.innerHTML = `
       const id = document.getElementById("productIdInput").value;
       if (!id) return alert("Enter Product ID");
 
-      const res = await fetch('http://localhost:5000/api/cusual', {
+      const res = await fetch('https://wahuserver.onrender.com/api/cusual', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId: id })
@@ -80,7 +80,7 @@ div.innerHTML = `
     async function deleteProduct(id) {
       if (!confirm("Remove from Cusual category?")) return;
 
-      const res = await fetch(`http://localhost:5000/api/cusual/${id}`, {
+      const res = await fetch(`https://wahuserver.onrender.com/api/cusual/${id}`, {
         method: 'DELETE'
       });
 
@@ -95,3 +95,4 @@ div.innerHTML = `
 </body>
 
 </html>
+
