@@ -20,7 +20,7 @@
 
   <script>
     async function loadAppliances() {
-      const res = await fetch('http://localhost:5000/api/homeAppliance');
+      const res = await fetch('https://wahuserver.onrender.com/api/homeAppliance');
       const products = await res.json();
 
       const list = document.getElementById('applianceList');
@@ -56,7 +56,7 @@
       const id = document.getElementById("productIdInput").value;
       if (!id) return alert("Enter Product ID");
 
-      const res = await fetch('http://localhost:5000/api/homeAppliance', {
+      const res = await fetch('https://wahuserver.onrender.com/api/homeAppliance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId: id })
@@ -70,7 +70,7 @@
     async function deleteProduct(id) {
       if (!confirm("Remove from Home Appliance category?")) return;
 
-      const res = await fetch(`http://localhost:5000/api/homeAppliance/${id}`, {
+      const res = await fetch(`https://wahuserver.onrender.com/api/homeAppliance/${id}`, {
         method: 'DELETE'
       });
 
@@ -85,3 +85,4 @@
 </body>
 
 </html>
+
