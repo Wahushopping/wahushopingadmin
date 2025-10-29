@@ -20,7 +20,7 @@
 
   <script>
     async function loadBottomwear() {
-      const res = await fetch('http://localhost:5000/api/bottomwear');
+      const res = await fetch('https://wahuserver.onrender.com/api/bottomwear');
       const products = await res.json();
 
       const list = document.getElementById('bottomwearList');
@@ -84,4 +84,5 @@
 </body>
 
 </html>
+
 
