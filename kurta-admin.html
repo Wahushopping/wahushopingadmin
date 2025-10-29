@@ -19,7 +19,7 @@
 
   <script>
     async function loadKurta() {
-      const res = await fetch('http://localhost:5000/api/kurta');
+      const res = await fetch('https://wahuserver.onrender.com/api/kurta');
       const products = await res.json();
 
       const list = document.getElementById('kurtaList');
@@ -53,7 +53,7 @@
       const id = document.getElementById("productIdInput").value;
       if (!id) return alert("Enter Product ID");
 
-      const res = await fetch('http://localhost:5000/api/kurta', {
+      const res = await fetch('https://wahuserver.onrender.com/api/kurta', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId: id })
@@ -67,7 +67,7 @@
     async function deleteProduct(id) {
       if (!confirm("Remove from Kurta category?")) return;
 
-      const res = await fetch(`http://localhost:5000/api/kurta/${id}`, {
+      const res = await fetch(`https://wahuserver.onrender.comapi/kurta/${id}`, {
         method: 'DELETE'
       });
 
@@ -82,3 +82,4 @@
 </body>
 
 </html>
+
