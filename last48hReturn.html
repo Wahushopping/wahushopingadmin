@@ -48,7 +48,7 @@
 <script>
 async function loadLast48hReturns() {
   try {
-    const res = await fetch("https://wahuserver.onrender.com/api/orders/last48h/returns");
+    const res = await fetch("http://localhost:5000/api/orders/last48h/returns");
     const returns = await res.json();
 
     const tbody = document.getElementById("returnsTable").querySelector("tbody");
@@ -93,4 +93,3 @@ loadLast48hReturns();
 
 </body>
 </html>
-

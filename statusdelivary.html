@@ -7,13 +7,19 @@
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   <link rel="stylesheet" href="catagory.css" />
   <style>
-    body{
+    body {
       padding-left: 50px;
       padding-right: 50px;
     }
     svg[id^="barcode-"] { margin-top: 10px; }
     #searchBar { margin-bottom: 10px; padding: 5px; width: 250px; }
     .copy-btn { margin-left: 10px; padding: 2px 6px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 3px; }
+    #countBox {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 16px;
+      color: #444;
+    }
   </style>
 </head>
 <body>
@@ -21,6 +27,9 @@
 
   <!-- Search Bar -->
   <input type="text" id="searchBar" placeholder="Search by Order ID" />
+
+  <!-- Count Box -->
+  <div id="countBox">Loading count...</div>
 
   <div id="orderList">Loading...</div>
 
@@ -30,14 +39,16 @@
     let visibleOrders = [];
 
     // Fetch orders
-    fetch("https://wahuserver.onrender.com/api/orders")
+    fetch("http://localhost:5000/api/orders")
       .then(res => res.json())
       .then(orders => {
-        // Filter delivered orders
         allOrders = orders.filter(o => o.status === statusFilter);
         renderOrders(allOrders);
       })
-      .catch(() => document.getElementById("orderList").innerHTML = "<p>Error loading orders.</p>");
+      .catch(() => {
+        document.getElementById("orderList").innerHTML = "<p>Error loading orders.</p>";
+        document.getElementById("countBox").innerText = "Count: 0";
+      });
 
     // Search functionality
     document.getElementById("searchBar").addEventListener("input", (e) => {
@@ -46,49 +57,97 @@
       renderOrders(filtered);
     });
 
-    // Render orders
+    // Render orders + count
     function renderOrders(orders) {
       visibleOrders = orders;
       const container = document.getElementById("orderList");
+      const countBox = document.getElementById("countBox");
+
+      // Update count
+      countBox.innerText = `Total ${statusFilter} Orders: ${orders.length}`;
 
       if (!orders.length) {
         container.innerHTML = `<p>No ${statusFilter} orders found.</p>`;
         return;
       }
 
-      container.innerHTML = orders.map(order => `
-        <div id="order-${order._id}" style="border:1px solid #ddd; padding:10px; margin:10px 0;">
-          <p>
-            <strong>Order ID:</strong> ${order._id}
-            <button class="copy-btn" onclick="copyOrderID('${order._id}')">Copy</button>
-          </p>
-          <svg id="barcode-${order._id}"></svg>
+     container.innerHTML = orders.map(order => `
+  <div id="order-${order._id}" style="border:1px solid #ddd; padding:10px; margin:10px 0; display:flex; justify-content:space-between; gap:20px;">
 
-          <p><strong>Placed On:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
-          <p><strong>User:</strong> ${order.user?.name || 'Unknown'}</p>
-          <p><strong>Total:</strong> ₹${order.total}</p>
-          <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
-          <p><strong>Status:</strong> ${order.status}</p>
+    <!-- LEFT SIDE (Order Details) -->
+    <div style="flex:1;">
+      <p>
+        <strong>Order ID:</strong> ${order._id}
+        <button class="copy-btn" onclick="copyOrderID('${order._id}')">Copy</button>
+      </p>
+      <svg id="barcode-${order._id}"></svg>
 
-          <label for="status-${order._id}">Update Status:</label>
-          <select id="status-${order._id}">
-            <option value="Ordered" ${order.status === 'Ordered' ? 'selected' : ''}>Ordered</option>
-            <option value="Packed" ${order.status === 'Packed' ? 'selected' : ''}>Packed</option>
-            <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
-            <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
-            <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-            <option value="Return" ${order.status === 'Return' ? 'selected' : ''}>Return</option>
-            <option value="Cancel" ${order.status === 'Cancel' ? 'selected' : ''}>Cancel</option>
-          </select>
+      <p><strong>Placed On:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+      <p><strong>User:</strong> ${order.user?.name || 'Unknown'}</p>
+       <p><strong>Mobile No:</strong> ${order.address?.phone || ''}</p>
+      <p><strong>Full Address:</strong> ${order.address?.fullAddress || ''}</p>
+      <p><strong>Total:</strong> ₹${order.total}</p>
+      <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
+      <p><strong>Status:</strong> ${order.status}</p>
 
-          <p><strong>Delivery Date:</strong>
-            <input type="date" id="delivery-${order._id}" 
-              value="${order.deliveryDate ? new Date(order.deliveryDate).toISOString().split('T')[0] : ''}" />
-          </p>
+      <label for="status-${order._id}">Update Status:</label>
+      <select id="status-${order._id}">
+        <option value="Ordered" ${order.status === 'Ordered' ? 'selected' : ''}>Ordered</option>
+        <option value="Packed" ${order.status === 'Packed' ? 'selected' : ''}>Packed</option>
+        <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+        <option value="Out for Delivery" ${order.status === 'Out for Delivery' ? 'selected' : ''}>Out for Delivery</option>
+        <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+        <option value="Return" ${order.status === 'Return' ? 'selected' : ''}>Return</option>
+        <option value="Cancel" ${order.status === 'Cancel' ? 'selected' : ''}>Cancel</option>
+      </select>
 
-          <button onclick="updateOrderStatus('${order._id}')">Update</button>
+      <p><strong>Delivery Date:</strong>
+        <input type="date" id="delivery-${order._id}" value="${order.deliveryDate ? new Date(order.deliveryDate).toISOString().split('T')[0] : ''}" />
+      </p>
+
+      <button onclick="updateOrderStatus('${order._id}')">Update</button>
+    </div>
+
+    <!-- RIGHT SIDE (Item Detail) -->
+    <div style="flex:1; border-left:1px solid #ccc; padding-left:15px;">
+  <strong>Items:</strong>
+  <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px;">
+    ${order.items.map(item => {
+      const imageUrl = item.image?.url || item.image || "placeholder.jpg";
+      return `
+        <div style="display:flex; gap:10px; border:1px solid #ccc; padding:8px; border-radius:5px; align-items:center;">
+
+          <!-- Product Image -->
+          <img src="${imageUrl}" style="width:200px; height:200px; object-fit:cover; border-radius:5px;">
         </div>
-      `).join('');
+          <!-- Product Details -->
+          <div style="display:flex; flex-direction:column; gap:3px;">
+            
+            <p style="margin:0; display:flex; justify-content:space-between; align-items:center;">
+              <strong>ID:</strong> <span>${item.id || 'N/A'}</span>
+              <button class="copy-btn" onclick="copyText('${item.id}')">Copy</button>
+            </p>
+
+            <p style="margin:0; display:flex; justify-content:space-between; align-items:center;">
+              <strong>Name:</strong> <span>${item.name}</span>
+              <button class="copy-btn" onclick="copyText('${item.name}')">Copy</button>
+            </p>
+
+
+            <p style="margin:0;"><strong>Qty:</strong> ${item.qty}</p>
+            <p style="margin:0;"><strong>Price:</strong> ₹${item.price}</p>
+            <p style="margin:0;"><strong>Size:</strong> ${item.size || 'N/A'}</p>
+            <p style="margin:0;"><strong>Reselling Company: </strong>${item.title || 'N/A'}</p>
+          </div>
+
+        </div>
+      `;
+    }).join("")}
+  </div>
+</div>
+
+  </div>
+`).join('');
 
       // Render barcodes
       orders.forEach(order => {
@@ -113,7 +172,7 @@
       const selectedStatus = document.getElementById(`status-${orderId}`).value;
       const deliveryDate = document.getElementById(`delivery-${orderId}`).value;
 
-      fetch(`https://wahuserver.onrender.com/api/orders/${orderId}/status`, {
+      fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: selectedStatus, deliveryDate: deliveryDate || null })
@@ -125,4 +184,3 @@
   </script>
 </body>
 </html>
-

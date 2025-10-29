@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Lucky Orders 🎉</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <link rel="stylesheet" href="catagory.css" />
+  <style>
+    body {
+      padding-left: 50px;
+      padding-right: 50px;
+    }
+    h2 {
+      color: #d4af37;
+      font-size: 28px;
+    }
+    svg[id^="barcode-"] { margin-top: 10px; }
+    #searchBar { margin-bottom: 10px; padding: 5px; width: 250px; }
+    .copy-btn { 
+      margin-left: 10px; 
+      padding: 2px 6px; 
+      cursor: pointer; 
+      background: #007bff; 
+      color: white; 
+      border: none; 
+      border-radius: 3px; 
+    }
+    .lucky-banner {
+      background: linear-gradient(45deg, gold, rgb(2, 252, 14));
+      color: rgb(0, 0, 0);
+      font-weight: bold;
+      padding: 6px 10px;
+      border-radius: 8px;
+      display: inline-block;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎉 Lucky Orders 🎉</h2>
+
+  <!-- Search Bar -->
+  <input type="text" id="searchBar" placeholder="Search by Order ID" />
+  <h3 id="totalCount">Total Lucky Orders: 0</h3>
+
+  <div id="orderList">Loading...</div>
+
+  <script>
+    const statusFilter = "Lucky"; // ✅ Only show Lucky orders
+    let allOrders = [];
+    let visibleOrders = [];
+
+    // Fetch orders
+    fetch("http://localhost:5000/api/orders")
+      .then(res => res.json())
+      .then(orders => {
+        allOrders = orders.filter(o => o.status === statusFilter);
+        renderOrders(allOrders);
+      })
+      .catch(() => document.getElementById("orderList").innerHTML = "<p>Error loading orders.</p>");
+
+    // Search functionality
+    document.getElementById("searchBar").addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase();
+      const filtered = allOrders.filter(order => order._id.toLowerCase().includes(query));
+      renderOrders(filtered);
+    });
+
+    // Render orders
+    function renderOrders(orders) {
+      visibleOrders = orders;
+      const container = document.getElementById("orderList");
+
+      // ✅ Show total count
+      document.getElementById("totalCount").textContent = `Total Lucky Orders: ${orders.length}`;
+
+      if (!orders.length) {
+        container.innerHTML = `<p>No ${statusFilter} orders found.</p>`;
+        return;
+      }
+
+      container.innerHTML = orders.map(order => `
+        <div id="order-${order._id}" style="border:2px solid red; padding:10px; margin:10px 0; border-radius:10px;">
+         <div class="lucky-banner" >🎉 Lottary for ${order.items?.[0]?.title || ""} 🎉</div>
+
+          <p>
+            <strong>Order ID:</strong> ${order._id}
+            <button class="copy-btn" onclick="copyOrderID('${order._id}')">Copy</button>
+          </p>
+          <svg id="barcode-${order._id}"></svg>
+
+          <p><strong>Placed On:</strong> ${new Date(order.createdAt).toLocaleString()}</p>
+          <p><strong>User:</strong> ${order.user?.name || 'Unknown'}</p>
+          <p><strong>Total:</strong> ₹${order.total}</p>
+          <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
+          <p><strong>Status:</strong> ${order.status}</p>
+
+          <label for="status-${order._id}">Update Status:</label>
+          <select id="status-${order._id}">
+            <option value="Lucky" ${order.status === 'Lucky' ? 'selected' : ''}>Lucky</option>
+            <option value="Ordered">Ordered</option>
+            <option value="Packed">Packed</option>
+            <option value="Shipped">Shipped</option>
+            <option value="Out for Delivery">Out for Delivery</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Return">Return</option>
+            <option value="Cancel">Cancel</option>
+          </select>
+
+          <p><strong>Delivery Date:</strong>
+            <input type="date" id="delivery-${order._id}" 
+              value="${order.deliveryDate ? new Date(order.deliveryDate).toISOString().split('T')[0] : ''}" />
+          </p>
+
+          <button onclick="updateOrderStatus('${order._id}')">Update</button>
+        </div>
+      `).join('');
+
+      // Render barcodes
+      orders.forEach(order => {
+        JsBarcode(`#barcode-${order._id}`, order._id, {
+          format: "CODE128",
+          width: 2,
+          height: 40,
+          displayValue: true
+        });
+      });
+    }
+
+    // Copy order ID
+    function copyOrderID(orderId) {
+      navigator.clipboard.writeText(orderId)
+        .then(() => alert(`Order ID ${orderId} copied!`))
+        .catch(() => alert("Failed to copy order ID."));
+    }
+
+    // Update order status
+    function updateOrderStatus(orderId) {
+      const selectedStatus = document.getElementById(`status-${orderId}`).value;
+      const deliveryDate = document.getElementById(`delivery-${orderId}`).value;
+
+      fetch(`http://localhost:5000/api/orders/${orderId}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: selectedStatus, deliveryDate: deliveryDate || null })
+      })
+      .then(res => res.json())
+      .then(() => location.reload())
+      .catch(() => alert("Failed to update order."));
+    }
+  </script>
+</body>
+</html>

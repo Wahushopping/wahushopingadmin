@@ -78,7 +78,7 @@
     // Fetch all Wahu products
     async function loadWahuProducts() {
       try {
-        const res = await fetch("https://wahuserver.onrender.com/api/wahu");
+        const res = await fetch("http://localhost:5000/api/wahu");
         const products = await res.json();
 
         if (!products.length) {
@@ -87,7 +87,7 @@
         }
 
         list.innerHTML = products.map(p => {
-          const imageUrl = p.image?.url || `https://wahuserver.onrender.com/uploads/${p.image || 'default-placeholder.png'}`;
+          const imageUrl = p.image?.url || `http://localhost:5000/uploads/${p.image || 'default-placeholder.png'}`;
           return `
             <div class="product-item">
               <div style="display:flex;align-items:center;gap:10px;">
@@ -113,7 +113,7 @@
       if (!productId) return alert("Enter Product ID first!");
 
       try {
-        const res = await fetch("https://wahuserver.onrender.com/api/wahu", {
+        const res = await fetch("http://localhost:5000/api/wahu", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ productId }),
@@ -136,7 +136,7 @@
     async function deleteWahuProduct(id) {
       if (!confirm("Remove this product from Wahu category?")) return;
       try {
-        const res = await fetch(`https://wahuserver.onrender.com/api/wahu/${id}`, {
+        const res = await fetch(`http://localhost:5000/api/wahu/${id}`, {
           method: "DELETE",
         });
         const data = await res.json();
@@ -156,4 +156,3 @@
   </script>
 </body>
 </html>
-

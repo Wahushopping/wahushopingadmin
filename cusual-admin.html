@@ -13,17 +13,20 @@
     <h1>Cusual Products</h1>
     <input type="text" id="productIdInput" placeholder="Enter Product ID" />
     <button onclick="addProduct()">Add Product to Cusual</button>
-    
+    <h3 id="totalCount">Total Products: 0</h3>
     <div id="cusualList"></div>
   </main>
 
   <script>
     async function loadCusual() {
-      const res = await fetch('https://wahuserver.onrender.com/api/cusual');
+      const res = await fetch('http://localhost:5000/api/cusual');
       const products = await res.json();
 
       const list = document.getElementById('cusualList');
       list.innerHTML = "";
+
+      // ✅ Show total number of products
+      document.getElementById("totalCount").textContent = `Total Products: ${products.length}`;
 
       products.forEach(p => {
         const div = document.createElement('div');
@@ -63,7 +66,7 @@ div.innerHTML = `
       const id = document.getElementById("productIdInput").value;
       if (!id) return alert("Enter Product ID");
 
-      const res = await fetch('https://wahuserver.onrender.com/api/cusual', {
+      const res = await fetch('http://localhost:5000/api/cusual', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId: id })
@@ -77,7 +80,7 @@ div.innerHTML = `
     async function deleteProduct(id) {
       if (!confirm("Remove from Cusual category?")) return;
 
-      const res = await fetch(`https://wahuserver.onrender.com/api/cusual/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/cusual/${id}`, {
         method: 'DELETE'
       });
 
@@ -92,4 +95,3 @@ div.innerHTML = `
 </body>
 
 </html>
-

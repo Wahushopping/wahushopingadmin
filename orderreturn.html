@@ -28,7 +28,7 @@
     let allOrders = [];
 
     // Fetch all return requests
-    fetch("https://wahuserver.onrender.com/api/orders/returns")
+    fetch("http://localhost:5000/api/orders/returns")
       .then(res => res.json())
       .then(orders => {
         allOrders = orders;
@@ -103,7 +103,7 @@
 
     // Update return status
     function updateReturnStatus(orderId, itemId, approved) {
-      fetch(`https://wahuserver.onrender.com/api/orders/${orderId}/return/${itemId}`, {
+      fetch(`http://localhost:5000/api/orders/${orderId}/return/${itemId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ approved })
@@ -121,5 +121,4 @@
   </script>
 </body>
 </html>
-
 

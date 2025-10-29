@@ -13,17 +13,20 @@
     <h1>Ladies shoes with heels</h1>
     <input type="text" id="productIdInput" placeholder="Enter Product ID" />
     <button onclick="addProduct()">Add Product to Ladies shoes </button>
-
+     <h3 id="totalCount">Total Products: 0</h3>
     <div id="beautyList"></div>
   </main>
 
   <script>
     async function loadBeauty() {
-      const res = await fetch('https://wahuserver.onrender.com/api/beauty');
+      const res = await fetch('http://localhost:5000/api/beauty');
       const products = await res.json();
 
       const list = document.getElementById('beautyList');
       list.innerHTML = "";
+
+      // ✅ Show total number of products
+      document.getElementById("totalCount").textContent = `Total Products: ${products.length}`;
 
       products.forEach(p => {
         const div = document.createElement('div');
@@ -52,7 +55,7 @@
       const id = document.getElementById("productIdInput").value;
       if (!id) return alert("Enter Product ID");
 
-      const res = await fetch('https://wahuserver.onrender.com/api/beauty', {
+      const res = await fetch('http://localhost:5000/api/beauty', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ productId: id })
@@ -66,7 +69,7 @@
     async function deleteProduct(id) {
       if (!confirm("Remove from Beauty category?")) return;
 
-      const res = await fetch(`https://wahuserver.onrender.com/api/beauty/${id}`, {
+      const res = await fetch(`http://localhost:5000/api/beauty/${id}`, {
         method: 'DELETE'
       });
 
@@ -81,4 +84,3 @@
 </body>
 
 </html>
-
